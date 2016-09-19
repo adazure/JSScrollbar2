@@ -15,33 +15,38 @@
     //Scroll özelliği ekleyeceğimiz nesnemiz
     function createObject(q) {
 
+        var _ = this;
+
+        var Z = q;
         //Oluşturulan scroll bar
-        var NScrollBarBody = document.createElement('div');
-        NScrollBarBody.className = 'adDwnScrollBar';
+        _.NScrollBarBody = document.createElement('div');
+        _.NScrollBarBody.className = 'adDwnScrollBar';
         //Scrollbar içindeki scroll nesnesi
-        var NScrollBarBodyScroll = document.createElement('div');
-        NScrollBarBodyScroll.className = 'adDwnScroll';
+        _.NScrollBarBodyScroll = document.createElement('div');
+        _.NScrollBarBodyScroll.className = 'adDwnScroll';
         //Scroll hareket ettiğirildiğinde etkileşim sağlanarak kaydırılacak içerik nesnesi
-        var NMoveContentObject = q.children[0];
+        _.NMoveContentObject = Z.children[0];
         //Mouse ile scroll nesnesine tıklanıp tıklanmadığı bilgisini tutan değişken
-        var IsMouseDownWithScroll = false;
+        _.IsMouseDownWithScroll = false;
         //Mouse ile scroll'a basıldığında ki anda bulunduğu Y/Top değerini tutan değişken
-        var getTopValueWhenPushToScroll;
+        _.getTopValueWhenPushToScroll;
         //Scroll nesnesi ile aşağı doğru gidildiğinde varacağı son Top değeri
-        var maxHeight = 0;
+        _.maxHeight = 0;
         //İçeriğin, belirlenen alandan daha küçük olması halinde scroll nesnesinin minumum yükseklik değeri
-        var scrollHeightMin = 40;
+        _.scrollHeightMin = 40;
         //Scroll nesnesinin sayfa içeriğine göre alacağı yükseklik değerini tutan değişken
-        var scrollHeight = 0;
+        _.scrollHeight = 0;
         //Scrollbar nesnesinde kaydırılacak boş alanın yüksekliğini tutan değişken
-        var barEmptyHeight = 0;
+        _.barEmptyHeight = 0;
         //İçerik yüksekliğini tutan değişken
-        var contentHeight = 0;
+        _.contentHeight = 0;
         //Responsive
-        var isResponsive = true;
+        _.isResponsive = true;
+        //Scroll özelliği body nesnesine uygulanmaya çalışıldığında kontrol edilecek değişken
+        _.isBody = Z.tagName && Z.tagName == "BODY";
 
         //Scroll hareket ettirildiğinde animasyon istenirse buradan yönetilecek
-        var animation = {
+        _.animation = {
             //Anlık olarak oluşturulan interval için kullanılacak değişken
             timer: 0,
             //Animasyon isteniyorsa true/false
@@ -53,7 +58,7 @@
             setContinue: false,
             //İçeriğin belirlenen pozisyon aralığına geldiğinde animasyonu bitirip bitirmemesini kontrol eden method
             checkBetween: function(value) {
-                if (value <= animation.setPosition + 1 && value >= animation.setPosition - 1)
+                if (value <= _.animation.setPosition + 1 && value >= _.animation.setPosition - 1)
                     return true;
                 else
                     return false;
@@ -62,25 +67,25 @@
             start: function() {
 
                 //Varsa öncesindeki animasyonu durdurur
-                animation.stop();
+                _.animation.stop();
                 //Başlat
-                animation.animateTimer = setInterval(function() {
+                _.animation.animateTimer = setInterval(function() {
                     try {
                         //İçerik nesnesinin o an ki pozisyon değerini alır
-                        var cPos = Math.round(NMoveContentObject.style.top.replace(/[^\d.-]/g, ''));
+                        var cPos = Math.round(_.NMoveContentObject.style.top.replace(/[^\d.-]/g, ''));
 
                         //İçerik nesnesinin yeni pozisyon değeri hesaplanıyor
-                        var fx = ((cPos + animation.setPosition) / 2);
+                        var fx = ((cPos + _.animation.setPosition) / 2);
 
                         //İçerik nesnesinin pozisyonu belirtilen aralıktaysa ve kullanıcı mouse ile basma işlemini bitirdiyse
                         //içerik nesnesinin ulaşması gereken son pozisyon değeri atanır ve animasyon kapatılır
-                        if (animation.checkBetween(fx) && !animation.setContinue) {
-                            NMoveContentObject.style.top = animation.setPosition + 'px';
-                            animation.stop();
+                        if (_.animation.checkBetween(fx) && !_.animation.setContinue) {
+                            _.NMoveContentObject.style.top = _.animation.setPosition + 'px';
+                            _.animation.stop();
                         }
                         //Eğer kullanıcı butona basmayı bırakmamışsa, bırakana kadar interval çalıştırılmaya devam eder. Taki bırakana kadar.
                         else
-                            NMoveContentObject.style.top = fx + 'px';
+                            _.NMoveContentObject.style.top = fx + 'px';
 
                     } catch (t) {
 
@@ -92,27 +97,28 @@
             },
             //Animasyon durdurulur
             stop: function() {
-                clearInterval(animation.animateTimer);
-                animation.setContinue = false;
+                clearInterval(_.animation.animateTimer);
+                _.animation.setContinue = false;
             }
 
         };
 
         //Scroll nesnesine mousedown olayı eklenmektedir.
-        event(NScrollBarBodyScroll, 'mousedown', function(ev) {
+        event(_.NScrollBarBodyScroll, 'mousedown', function(ev) {
+
             //Tıklama esnasında nesnesinin tüm işlevselliği iptal edilir.
             ev.preventDefault();
             //Scroll nesnesine basıldığı andaki pozisyon değeri alınır
-            getTopValueWhenPushToScroll = ev.pageY - ev.target.offsetTop;
+            _.getTopValueWhenPushToScroll = ev.pageY - ev.target.offsetTop;
             //Scroll nesnesine basıldı uyarısı
-            IsMouseDownWithScroll = true;
+            _.IsMouseDownWithScroll = true;
 
             //Eğer animasyon yapılmak isteniyorsa
-            if (animation.status) {
+            if (_.animation.status) {
                 //Baslat
-                animation.start();
+                _.animation.start();
                 //Kullanıcı nesneye tıkladı
-                animation.setContinue = true;
+                _.animation.setContinue = true;
             }
 
             //nesneye basılmamış gibi davran
@@ -123,81 +129,118 @@
         event(w, 'mousemove', function(ev) {
 
             //Scroll nesnesine basıldığı
-            if (IsMouseDownWithScroll) {
+            if (_.IsMouseDownWithScroll) {
 
                 //Scroll nesnesinin gideceği yeni pozisyon değeri
-                var nY = ev.pageY - NScrollBarBody.offsetTop - getTopValueWhenPushToScroll;
+                var nY = ev.pageY - _.NScrollBarBody.offsetTop - _.getTopValueWhenPushToScroll;
 
                 //Sınırlar kontrol ediliyor
                 if (nY < 0)
                     nY = 0;
-                else if (nY > maxHeight)
-                    nY = maxHeight;
+                else if (nY > _.maxHeight)
+                    nY = _.maxHeight;
+
 
                 //Scroll nesnesinin yeni pozisyon değeri bildiriliyor
-                animation.setPosition = -Math.floor(nY * (contentHeight / barEmptyHeight));
+                _.animation.setPosition = -Math.floor(nY * (_.contentHeight / _.barEmptyHeight));
 
                 //Animasyon yoksa icerik pozisyon Top değerini ata
-                if (!animation.status)
-                    NMoveContentObject.style.top = animation.setPosition + 'px';
+                if (!_.animation.status)
+                    _.NMoveContentObject.style.top = _.animation.setPosition + 'px';
 
                 //Scroll nesnesi pozisyonu aktarılıyor
-                NScrollBarBodyScroll.style.top = nY + 'px';
+                _.NScrollBarBodyScroll.style.top = nY + 'px';
             }
         });
 
         //Sayfa üzerinde mouse basılma olayı bırakıldığında
         event(w, 'mouseup', function(ev) {
             //Kullanıcı mouse'a tıklamayı bıraktı. Mouse hareket etse de iceriği hareket ettirme uyarısı
-            IsMouseDownWithScroll = false;
-            animation.setContinue = false;
+            _.IsMouseDownWithScroll = false;
+            _.animation.setContinue = false;
         });
 
         //Ekran küçültülüp büyütültüğünde işletir
-        if (!isResponsive)
+        if (!_.isResponsive)
             event(w, 'resize', resizer);
 
         //Scroll nesnesi bar nesnesi içerisine ekleniyor
-        NScrollBarBody.appendChild(NScrollBarBodyScroll);
+        _.NScrollBarBody.appendChild(_.NScrollBarBodyScroll);
 
         function resizer() {
 
+            var iHeight = _.isBody ? w.innerHeight : _.NScrollBarBody.getFullHeight();
+
             //İçerik ve scroll nesnesinin alacağı pozisyonlar için veriler işleniyor
             //İçerik yüksekliği alan yüksekliğinden büyükse
-            if (NMoveContentObject.offsetHeight > NScrollBarBody.offsetHeight) {
-                q.classList.add('dwn-display');
+            var WrapAndContentHeight = _.NMoveContentObject.getFullHeight() + Z.getFullHeightPadding() + Z.getFullHeightMargin();
+
+            if (WrapAndContentHeight > iHeight) {
+                Z.classList.add('dwn-display');
+                Z.classList.remove('dwn-nodisplay');
                 //İçeriğin taşan kısmı hesaplanıyor Ör : 500px
-                contentHeight = (NMoveContentObject.offsetHeight - NScrollBarBody.offsetHeight);
+                _.contentHeight = (WrapAndContentHeight - iHeight);
                 //Taşan kısmın toplam yükseklikte ki % yüzde değeri bulunuyor ör : %70 daha fazla içerik alanı. Tekrar 100% den çıkarılacak görünen kısım hesaplanıyor
-                var percent = 100 - (contentHeight / NMoveContentObject.offsetHeight * 100);
+                var percent = 100 - (_.contentHeight / WrapAndContentHeight * 100);
                 //Gelen %30'luk değeri bu kez scroll nesnesinin bar'a oranla yüksekliği için hesaplıyoruz
-                scrollHeight = NScrollBarBody.offsetHeight / 100 * percent;
+                _.scrollHeight = iHeight / 100 * percent;
                 //Scroll nesne yüksekliğinden kalan kısmıda diğer değişkene aktarıyoruz
-                barEmptyHeight = NScrollBarBody.offsetHeight - scrollHeight;
+                _.barEmptyHeight = iHeight - _.scrollHeight;
                 //Eğer scroll nesnesi yüksekliği minimum yükseklikten az ise minumuna eşitliyoruz
-                scrollHeight = Math.max(scrollHeight, scrollHeightMin);
+                _.scrollHeight = Math.max(_.scrollHeight, _.scrollHeightMin);
 
             }
             //Eğer içerik yüksekliği alan yüksekliğinden az ise scroll gizleniyor
             else {
-                scrollHeight = scrollHeightMin;
-                q.classList.remove('dwn-display');
+                _.scrollHeight = _.scrollHeightMin;
+                Z.classList.remove('dwn-display');
+                Z.classList.add('dwn-nodisplay');
             }
 
-            maxHeight = NScrollBarBody.clientHeight - scrollHeight;
-            NScrollBarBodyScroll.style.height = scrollHeight + 'px';
+            _.maxHeight = (_.isBody ? w.innerHeight : _.NScrollBarBody.getFullHeight()) - _.scrollHeight;
+            _.NScrollBarBodyScroll.style.height = _.scrollHeight + 'px';
         }
 
         //Sayfa yüklendikten 200ms sonra sayfa boyutlandırma methodunu çalıştır
-        if (!isResponsive)
+        if (!_.isResponsive)
             setTimeout(resizer, 200);
         else {
             setInterval(resizer, 300);
         }
 
-        return NScrollBarBody;
+        return _.NScrollBarBody;
     }
 
+
+    Element.prototype.getCss = function(name) {
+        var x = ((this.currentStyle || w.getComputedStyle(this))[name]);
+        if (!x) return 0;
+        return Math.round(x.replace(/[^\d.-]/g, ''));
+    }
+
+    Element.prototype.getFullHeight = function() {
+        return ((this.offsetHeight || this.clientHeight || this.innerHeight) + this.getCss("marginTop") + this.getCss("marginBottom") + this.getCss('paddingTop') + this.getCss('paddingBottom') + this.getCss('borderTop') + this.getCss('borderBottom'));
+    }
+
+    Element.prototype.getFullWidth = function() {
+        return ((this.offsetWidth || this.clientWidth || this.innerWidth) + this.getCss("marginLeft") + this.getCss("marginRight") + this.getCss('paddingLeft') + this.getCss('paddingRight') + this.getCss('borderLeft') + this.getCss('borderRight'));
+    }
+
+    Element.prototype.getFullHeightPadding = function() {
+        return (this.getCss('paddingTop') + this.getCss('paddingBottom'));
+    }
+
+    Element.prototype.getFullWidthPadding = function() {
+        return (this.getCss('paddingLeft') + this.getCss('paddingRight'));
+    }
+
+    Element.prototype.getFullHeightMargin = function() {
+        return (this.getCss('MarginTop') + this.getCss('MarginBottom'));
+    }
+
+    Element.prototype.getFullWidthMargin = function() {
+        return (this.getCss('MarginLeft') + this.getCss('MarginRight'));
+    }
 
     //Nesneye olay ekleme methodu
     function event(a, b, c) {

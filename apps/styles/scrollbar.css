@@ -1,21 +1,21 @@
-div.dwn-display div.dwn-context {
-    /* margin-right: 20px;*/
+.dwn-display>div.dwn-context {
+    margin-right: 20px;
 }
 
-div.dwn-display:hover div.adDwnScrollBar {
+.dwn-display:hover>div.adDwnScrollBar {
     opacity: 1;
 }
 
-div.dwn-display div.adDwnScrollBar {
+.dwn-display>div.adDwnScrollBar {
     display: block;
 }
 
-div.dwn-scrollbar {
+.dwn-scrollbar {
     position: relative;
     overflow: hidden;
 }
 
-div.dwn-scrollbar>div.dwn-context {
+.dwn-scrollbar>div.dwn-context {
     position: relative;
     overflow: hidden;
 }
@@ -30,7 +30,15 @@ div.adDwnScrollBar {
     margin: 0 1px 1px 1px;
     overflow: hidden;
     transition: all .3s linear;
-    /* opacity: 0; */
+    opacity: 0;
+}
+
+body>div.adDwnScrollBar {
+    position: fixed !important;
+}
+
+.dwn-nodisplay>div.adDwnScrollBar {
+    display: none !important;
 }
 
 div.adDwnScroll {
